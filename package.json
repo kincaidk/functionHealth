@@ -1,0 +1,23 @@
+{
+  "name": "functionhealth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "apiTest.js",
+  "type": "commonjs",
+  "scripts": {
+    "go": "tsx apiTest.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.16.1",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.22.2",
+    "typescript": "^6.0.3"
+  }
+}
