@@ -25,7 +25,9 @@ export class LoginPage {
         return new JoinPage(this.page)
     }
 
-    async signIn(email: string, password: string): Promise<void> { // TODO - Return an instance of the class for the landing page.
+    async signIn(params: {email: string, password: string}): Promise<void> { // TODO - Return an instance of the class for the landing page.
+        const { email, password } = params
+
         await this.emailField.fill(email)
         await this.passwordField.fill(password)
         await this.submitButton.click()

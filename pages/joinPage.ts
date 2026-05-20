@@ -17,6 +17,5 @@ export class JoinPage {
         this.passwordField = page.getByRole('textbox', { name: 'Password' })
         this.termsOfUseCheckbox = page.getByRole('button', { name: 'I agree to Ezra\'s terms of use' })
         this.submitButton = page.getByRole('button', { name: 'Submit' })
-
     }
 }
