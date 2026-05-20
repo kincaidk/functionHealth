@@ -3,7 +3,7 @@ import { createNewMember, getToken } from '../functions/apiRequests';
 import { TOKEN_TYPE } from '../constants/tokenType';
 
 // QUESTION 2 - PART 2 - HTTP requests
-test('[API] Create 2 members and verify that they cant see each other\'s data.', async ({ page }) => {
+test('', async ({ page }) => {
   
 
   
