@@ -1,12 +1,22 @@
 import { test, expect } from '@playwright/test';
-import { createNewMember, getToken } from '../functions/apiRequests';
-import { TOKEN_TYPE } from '../constants/tokenType';
+import { LoginPage } from '../pages/loginPage';
+import { JoinPage } from '../pages/joinPage';
+import { SelectPlanPage } from '../pages/selectPlan';
 
-// QUESTION 2 - PART 2 - HTTP requests
-test('', async ({ page }) => {
-  
 
-  
+test('e2e booking test', async ({ page }) => {
+  const loginPage: LoginPage = new LoginPage(page)
+  await loginPage.goTo()
+  const joinPage: JoinPage = await loginPage.goToJoinPage()
+
+  const firstName: string = "Playwright FirstName"
+  const lastName: string = "Playwright LastName"
+  const email: string = `playwright+${Date.now()}@gmail.com`
+  const phoneNumber: string = "+1 301-654-6546"
+  const password: string = "Testtest0"
+  const selectPlanPage: SelectPlanPage = await joinPage.signUp({firstName, lastName, email, phoneNumber, password})
+
+  await expect(selectPlanPage.selectYourScanHeading).toBeVisible()
 });
 
 
