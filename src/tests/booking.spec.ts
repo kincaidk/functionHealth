@@ -6,6 +6,7 @@ import { chooseRandomEnumValue } from '../functions/helpers';
 import { ScheduleScanPage } from '../pages/scheduleScanPage';
 import { YesNoMode } from '../components/yesNoQuestions';
 import { CookieConsentPrompt } from '../components/cookieConsentPrompt';
+import { ScanConfirmPage } from '../pages/scanConfirmPage';
 
 
 test('e2e booking test', async ({ page }) => {
@@ -58,12 +59,12 @@ test('e2e booking test', async ({ page }) => {
   await scheduleScanPage.chooseCenter()
 
   // Select the dates and times for appointment 1
-  await scheduleScanPage.selectAppointmentDatesAndTimes(1)
+  await scheduleScanPage.selectAppointmentDatesAndTimes({ appointmentNumber: 1 })
 
   // Select the dates and times for appointment 2, if necessary
   const appointment2Calendar: Locator = scheduleScanPage.findCalendarForAppointment(2)
   if (await appointment2Calendar.isVisible()) {
-    await scheduleScanPage.selectAppointmentDatesAndTimes(2)
+    await scheduleScanPage.selectAppointmentDatesAndTimes({ appointmentNumber: 2 })
   }
 
   // Continue
@@ -71,6 +72,21 @@ test('e2e booking test', async ({ page }) => {
 
   //// Confirm we landed on the 'Reserve Appointment' page
   await expect(reserveAppointmentPage.reserveYourAppointmentHeading).toBeVisible()
+
+  // Fill out payment details
+  // await reserveAppointmentPage.fillOutBankDetails()
+  await reserveAppointmentPage.fillOutCardDetails()
+  const scanConfirmPage: ScanConfirmPage = new ScanConfirmPage(page)
+  await Promise.all([
+    reserveAppointmentPage.continue(),
+    page.waitForURL(scanConfirmPage.url)
+  ])
+  
+
+  // await page.waitForTimeout(10_000)
+  await expect(scanConfirmPage.beingMedicalQuestionnaireButton).toBeVisible()
+
+  // await reserveAppointmentPage._test()
 });
 
 
