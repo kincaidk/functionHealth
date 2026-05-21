@@ -53,8 +53,8 @@ export class SelectPlanPage {
 
         this.dateOfBirthField = page.getByRole('textbox', { name: 'Date of birth (MM-DD-YYYY)' })
         this.sexAtBirthCombobox = page.getByText( 'What was your sex at birth?' ).locator('..').getByRole('combobox')
-        this.maleSexOption = page.getByRole('option', { name: /^Male/ })//.locator('span').first()
-        this.femaleSexOption = page.getByRole('option', { name: /^Female/ })//.locator('span').first()
+        this.maleSexOption = page.getByRole('option', { name: /^Male/ })
+        this.femaleSexOption = page.getByRole('option', { name: /^Female/ })
 
         // Primary scans
         this.mriScanCard = page.getByTestId('FB30-encounter-card')
@@ -148,20 +148,25 @@ export class SelectPlanPage {
 
     async continue(yesNoMode: YesNoMode): Promise<ScheduleScanPage> {
         await this.continueButton.click()
-        await this.yesNoQuestions.answerYesNoQuestions(yesNoMode)
+
+        // These seem to only show up if a heart scan was selected.
+        const yesNoQuestionsArePresent: boolean = await this.yesNoQuestions.noChestSymptomsButton.isVisible()
+        if (yesNoQuestionsArePresent) {
+            await this.yesNoQuestions.answerYesNoQuestions(yesNoMode)
+        }
 
         const wereSorryModalIsPresent: boolean = await this.wereSorryModal.continueWithoutHeartCalcium.isVisible()
         if (wereSorryModalIsPresent) {
             await this.wereSorryModal.clickContinueWithoutHeartCalcium()
         }
 
-        const scheduleScanPage: ScheduleScanPage = new ScheduleScanPage(this.page)
+        const scheduleScanPage: ScheduleScanPage = new ScheduleScanPage(this.page, 'New York')
         await scheduleScanPage.waitForPageToLoad()
 
         return scheduleScanPage
     }
 
-    async cancel() {
+    async cancel(): Promise<void> {
         await this.cancelButton.click()
         // TODO - Not super necessary for the assignment, but -> add validation for landing on the homepage. 
     }

@@ -26,9 +26,10 @@ test('e2e booking test', async ({ page }) => {
   const password: string = "Testtest0"
   const selectPlanPage: SelectPlanPage = await joinPage.signUp({firstName, lastName, email, phoneNumber, password})
 
-  // Confirm we landed on the `Select Your Scan` page
+  //// Confirm we landed on the `Select Your Scan` page
   await expect(selectPlanPage.selectYourScanHeading).toBeVisible()
 
+  
   // Select birth date and sex
   const birthDate: string = "01-01-1990"
   const sexAtBirth: Sex = chooseRandomEnumValue(Sex)
@@ -43,16 +44,31 @@ test('e2e booking test', async ({ page }) => {
   await selectPlanPage.chooseAddOns({includeHeartScanAddOn: true, includeLungsScanAddOn: true})
 
   // Continue
-  const yesNoMode: YesNoMode = chooseRandomEnumValue(YesNoMode)
+  const yesNoMode: YesNoMode = YesNoMode.AllNo //chooseRandomEnumValue(YesNoMode)
 
   //testing
   console.log(`yesNoMode: ${yesNoMode}`)
 
   const scheduleScanPage: ScheduleScanPage = await selectPlanPage.continue(yesNoMode)
 
-  // Confirm we landed on the `Schedule your scan` page
+  //// Confirm we landed on the `Schedule your scan` page
   await expect(scheduleScanPage.scheduleYourScanHeading).toBeVisible()
 
+
+  // Select the state
+  await scheduleScanPage.chooseState()
+
+  // Select the center
+  await scheduleScanPage.chooseCenter()
+
+  // Select the dates and times
+  await scheduleScanPage.selectAllNecessaryDatesAndTimes()
+
+  // Continue
+  const reserveAppointmentPage = await scheduleScanPage.continue()
+
+  //// Confirm we landed on the 'Reserve Appointment' page
+  await expect(reserveAppointmentPage.reserveYourAppointmentHeading).toBeVisible()
 });
 
 

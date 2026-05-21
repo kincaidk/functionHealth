@@ -26,7 +26,7 @@ export class JoinPage {
         this.submitButton = page.getByRole('button', { name: 'Submit' })
     }
 
-    async goTo() {
+    async goTo(): Promise<void> {
         await this.page.goto('https://myezra-staging.ezra.com/join')
         await this.waitForPageToLoad()
     }
