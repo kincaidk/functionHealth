@@ -1,14 +1,24 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/loginPage';
 import { JoinPage } from '../pages/joinPage';
-import { SelectPlanPage } from '../pages/selectPlan';
+import { Scan, SelectPlanPage, Sex } from '../pages/selectPlan';
+import { chooseRandomEnumValue } from '../functions/helpers';
+import { ScheduleScanPage } from '../pages/scheduleScanPage';
+import { YesNoMode } from '../components/yesNoQuestions';
+import { CookieConsentPrompt } from '../components/cookieConsentPrompt';
 
 
 test('e2e booking test', async ({ page }) => {
+  // Being new account creation process 
   const loginPage: LoginPage = new LoginPage(page)
   await loginPage.goTo()
   const joinPage: JoinPage = await loginPage.goToJoinPage()
 
+  // Close the cookie consent prompt
+  const cookieConsentPrompt: CookieConsentPrompt = new CookieConsentPrompt(page)
+  await cookieConsentPrompt.acceptCookies()
+
+  // Finish new account creation process
   const firstName: string = "Playwright FirstName"
   const lastName: string = "Playwright LastName"
   const email: string = `playwright+${Date.now()}@gmail.com`
@@ -16,7 +26,33 @@ test('e2e booking test', async ({ page }) => {
   const password: string = "Testtest0"
   const selectPlanPage: SelectPlanPage = await joinPage.signUp({firstName, lastName, email, phoneNumber, password})
 
+  // Confirm we landed on the `Select Your Scan` page
   await expect(selectPlanPage.selectYourScanHeading).toBeVisible()
+
+  // Select birth date and sex
+  const birthDate: string = "01-01-1990"
+  const sexAtBirth: Sex = chooseRandomEnumValue(Sex)
+  await selectPlanPage.enterBirthDate(birthDate)
+  await selectPlanPage.chooseSexAtBirth(sexAtBirth)
+
+  // Select primary scan
+  const selectedScan: Scan = chooseRandomEnumValue(Scan)
+  await selectPlanPage.choosePrimaryScan(selectedScan)
+
+  // Select add-on(s)
+  await selectPlanPage.chooseAddOns({includeHeartScanAddOn: true, includeLungsScanAddOn: true})
+
+  // Continue
+  const yesNoMode: YesNoMode = chooseRandomEnumValue(YesNoMode)
+
+  //testing
+  console.log(`yesNoMode: ${yesNoMode}`)
+
+  const scheduleScanPage: ScheduleScanPage = await selectPlanPage.continue(yesNoMode)
+
+  // Confirm we landed on the `Schedule your scan` page
+  await expect(scheduleScanPage.scheduleYourScanHeading).toBeVisible()
+
 });
 
 

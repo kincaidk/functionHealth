@@ -32,7 +32,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     launchOptions: {
       slowMo: 100
-    }
+    },
+    video: 'retain-on-failure'
   },
 
   /* Configure projects for major browsers */
