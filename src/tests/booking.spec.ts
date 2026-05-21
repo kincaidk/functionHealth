@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 import { LoginPage } from '../pages/loginPage';
 import { JoinPage } from '../pages/joinPage';
 import { Scan, SelectPlanPage, Sex } from '../pages/selectPlan';
@@ -37,7 +37,7 @@ test('e2e booking test', async ({ page }) => {
   await selectPlanPage.chooseSexAtBirth(sexAtBirth)
 
   // Select primary scan
-  const selectedScan: Scan = chooseRandomEnumValue(Scan)
+  const selectedScan: Scan = Scan.MriScanWithSkeletalAndNeurologicalAssessment//chooseRandomEnumValue(Scan)
   await selectPlanPage.choosePrimaryScan(selectedScan)
 
   // Select add-on(s)
@@ -45,10 +45,6 @@ test('e2e booking test', async ({ page }) => {
 
   // Continue
   const yesNoMode: YesNoMode = YesNoMode.AllNo //chooseRandomEnumValue(YesNoMode)
-
-  //testing
-  console.log(`yesNoMode: ${yesNoMode}`)
-
   const scheduleScanPage: ScheduleScanPage = await selectPlanPage.continue(yesNoMode)
 
   //// Confirm we landed on the `Schedule your scan` page
@@ -61,8 +57,14 @@ test('e2e booking test', async ({ page }) => {
   // Select the center
   await scheduleScanPage.chooseCenter()
 
-  // Select the dates and times
-  await scheduleScanPage.selectAllNecessaryDatesAndTimes()
+  // Select the dates and times for appointment 1
+  await scheduleScanPage.selectAppointmentDatesAndTimes(1)
+
+  // Select the dates and times for appointment 2, if necessary
+  const appointment2Calendar: Locator = scheduleScanPage.findCalendarForAppointment(2)
+  if (await appointment2Calendar.isVisible()) {
+    await scheduleScanPage.selectAppointmentDatesAndTimes(2)
+  }
 
   // Continue
   const reserveAppointmentPage = await scheduleScanPage.continue()
@@ -72,15 +74,6 @@ test('e2e booking test', async ({ page }) => {
 });
 
 
-// test('get started link', async ({ page }) => {
-//   await page.goto('https://playwright.dev/');
-
-//   // Click the get started link.
-//   await page.getByRole('link', { name: 'Get started' }).click();
-
-//   // Expects page to have a heading with the name of Installation.
-//   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-// });
 
 
 
