@@ -25,6 +25,7 @@ test('e2e booking test', async ({ page }) => {
   const email: string = `playwright+${Date.now()}@gmail.com`
   const phoneNumber: string = "+1 301-654-6546"
   const password: string = "Testtest0"
+
   const selectPlanPage: SelectPlanPage = await joinPage.signUp({firstName, lastName, email, phoneNumber, password})
 
   //// Confirm we landed on the `Select Your Scan` page
@@ -74,8 +75,7 @@ test('e2e booking test', async ({ page }) => {
   await expect(reserveAppointmentPage.reserveYourAppointmentHeading).toBeVisible()
 
   // Fill out payment details
-  // await reserveAppointmentPage.fillOutBankDetails()
-  await reserveAppointmentPage.fillOutCardDetails()
+  await reserveAppointmentPage.bankCheckout(email, phoneNumber)
   const scanConfirmPage: ScanConfirmPage = new ScanConfirmPage(page)
   await Promise.all([
     reserveAppointmentPage.continue(),
