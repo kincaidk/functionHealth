@@ -8,7 +8,6 @@ import { YesNoMode } from '../components/yesNoQuestions';
 import { CookieConsentPrompt } from '../components/cookieConsentPrompt';
 import { CheckoutType } from '../constants/checkoutType';
 
-
 test('e2e booking test', async ({ page }) => {
   // Being new account creation process 
   const loginPage: LoginPage = new LoginPage(page)
@@ -81,54 +80,3 @@ test('e2e booking test', async ({ page }) => {
   // Confirm we finsihed paying by checking if we landed on the Scan Confirm page.
   await expect(scanConfirmPage.beingMedicalQuestionnaireButton).toBeVisible()
 });
-
-
-
-
-
-
-
-// const { validate: isUUID } = await import('uuid');
-
-  // // Create members A & B
-  // const memberAEmail: string = `Kellenceo+${Date.now()}@gmail.com`
-  // const memberBEmail: string = `Kellenceo+${Date.now()}@gmail.com`
-  // const password: string = "Testtest0"
-  // const firstName: string = "KellenTest"
-  // const lastName: string = "Test"
-  // const phoneNumber: string = "+1 301-654-6546"
-  // const memberACreationResponse = await createNewMember({ firstName, lastName, email: memberAEmail, password, phoneNumber })
-  // const memberBCreationResponse = await createNewMember({ firstName, lastName, email: memberBEmail, password, phoneNumber })
-
-  // const memberAIdSuccessfullyGenerated: boolean = 'data' in memberACreationResponse && isUUID(memberACreationResponse.data)
-  // const memberBIdSuccessfullyGenerated: boolean = 'data' in memberBCreationResponse && isUUID(memberBCreationResponse.data)
-
-  // expect(memberAIdSuccessfullyGenerated).toBeTruthy()
-  // expect(memberBIdSuccessfullyGenerated).toBeTruthy()
-
-  // // Generate memberA token
-  // const memberATokenResponse = await getToken(memberAEmail, password)
-
-  // // Generate memberB token
-  // const memberBTokenResponse = await getToken(memberBEmail, password)
-
-  // // Make sure tokens were generated
-  // const tokenType: string = TOKEN_TYPE.ACCESS!
-  // const tokenAWasGenerated: boolean = 'data' in memberATokenResponse && tokenType in memberATokenResponse.data && memberATokenResponse.data[tokenType].length > 0
-  // const tokenBWasGenerated: boolean = 'data' in memberBTokenResponse && tokenType in memberBTokenResponse.data && memberBTokenResponse.data[tokenType].length > 0
-  // expect(tokenAWasGenerated).toBeTruthy()
-  // expect(tokenBWasGenerated).toBeTruthy()
-
-  // // Grab tokens from responses
-  // const memberAToken = memberATokenResponse.data[tokenType]
-  // const memberBToken = memberBTokenResponse.data[tokenType]
-
-  // // Create headers
-  // const memberAHeaders = {
-  //   'authorization': `Bearer ${memberAToken}`
-  // }
-  // const memberBHeaders = {
-  //   'authorization': `Bearer ${memberBToken}`
-  // }
-
-  // const response = await axios.get(URLS.ALL_DATA!, { memberAHeaders })
