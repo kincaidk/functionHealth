@@ -6,7 +6,7 @@ import { chooseRandomEnumValue } from '../functions/helpers';
 import { ScheduleScanPage } from '../pages/scheduleScanPage';
 import { YesNoMode } from '../components/yesNoQuestions';
 import { CookieConsentPrompt } from '../components/cookieConsentPrompt';
-import { ScanConfirmPage } from '../pages/scanConfirmPage';
+import { CheckoutType } from '../constants/checkoutType';
 
 
 test('e2e booking test', async ({ page }) => {
@@ -23,7 +23,7 @@ test('e2e booking test', async ({ page }) => {
   const firstName: string = "Playwright FirstName"
   const lastName: string = "Playwright LastName"
   const email: string = `playwright+${Date.now()}@gmail.com`
-  const phoneNumber: string = "+1 301-654-6546"
+  const phoneNumber: string = "3016546546"
   const password: string = "Testtest0"
 
   const selectPlanPage: SelectPlanPage = await joinPage.signUp({firstName, lastName, email, phoneNumber, password})
@@ -34,19 +34,19 @@ test('e2e booking test', async ({ page }) => {
   
   // Select birth date and sex
   const birthDate: string = "01-01-1990"
-  const sexAtBirth: Sex = chooseRandomEnumValue(Sex)
+  const sexAtBirth: Sex = chooseRandomEnumValue({ enumToChooseFrom: Sex })
   await selectPlanPage.enterBirthDate(birthDate)
   await selectPlanPage.chooseSexAtBirth(sexAtBirth)
 
   // Select primary scan
-  const selectedScan: Scan = Scan.MriScanWithSkeletalAndNeurologicalAssessment//chooseRandomEnumValue(Scan)
+  const selectedScan: Scan = chooseRandomEnumValue({ enumToChooseFrom: Scan })
   await selectPlanPage.choosePrimaryScan(selectedScan)
 
   // Select add-on(s)
   await selectPlanPage.chooseAddOns({includeHeartScanAddOn: true, includeLungsScanAddOn: true})
 
   // Continue
-  const yesNoMode: YesNoMode = YesNoMode.AllNo //chooseRandomEnumValue(YesNoMode)
+  const yesNoMode: YesNoMode = YesNoMode.AllNo //chooseRandomEnumValue({ enumToChooseFrom: YesNoMode })
   const scheduleScanPage: ScheduleScanPage = await selectPlanPage.continue(yesNoMode)
 
   //// Confirm we landed on the `Schedule your scan` page
@@ -74,19 +74,12 @@ test('e2e booking test', async ({ page }) => {
   //// Confirm we landed on the 'Reserve Appointment' page
   await expect(reserveAppointmentPage.reserveYourAppointmentHeading).toBeVisible()
 
-  // Fill out payment details
-  await reserveAppointmentPage.bankCheckout(email, phoneNumber)
-  const scanConfirmPage: ScanConfirmPage = new ScanConfirmPage(page)
-  await Promise.all([
-    reserveAppointmentPage.continue(),
-    page.waitForURL(scanConfirmPage.url)
-  ])
-  
+  // Checkout
+  const randomCheckoutType = chooseRandomEnumValue({ enumToChooseFrom: CheckoutType, valuesToAvoid: [ CheckoutType.GooglePay ] })
+  const scanConfirmPage = await reserveAppointmentPage.checkout({ checkoutType: randomCheckoutType, email, phoneNumber })
 
-  // await page.waitForTimeout(10_000)
+  // Confirm we finsihed paying by checking if we landed on the Scan Confirm page.
   await expect(scanConfirmPage.beingMedicalQuestionnaireButton).toBeVisible()
-
-  // await reserveAppointmentPage._test()
 });
 
 

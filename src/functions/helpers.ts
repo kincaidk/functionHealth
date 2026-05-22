@@ -1,7 +1,10 @@
-export function chooseRandomEnumValue<T extends Record<string, string|number>> (enumToChooseFrom: T): T[keyof T] {
-    let values: T[keyof T][] = Object.values(enumToChooseFrom) as T[keyof T][]
-    values = values.filter((value) => typeof(value) === "number")
+export function chooseRandomEnumValue<T extends Record<string, string|number>> (params: { enumToChooseFrom: T, valuesToAvoid?: T[keyof T][] }): T[keyof T] {
+    const { enumToChooseFrom, valuesToAvoid = [] } = params
 
+    let values: T[keyof T][] = Object.values(enumToChooseFrom) as T[keyof T][]
+    const allValuesAreStrings: boolean = values.every((value) => typeof(value) === 'string')
+    values = values.filter((value) => typeof(value) === (allValuesAreStrings ? 'string' : 'number') && !valuesToAvoid.includes(value))
+    
     const randomIndex: number = Math.floor(Math.random() * values.length)
     const randomEnumValue: T[keyof T] = values[randomIndex] as T[keyof T]
     return randomEnumValue
