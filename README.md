@@ -1,10 +1,27 @@
 NOTE: See **ASSIGNMENT_ANSWERS.md** for answers to the interview questions.
 
 # HOW TO RUN THE TESTS
-- In your terminal: 
+- In your terminal:
+    - Download `Node.js` (comes with `npm`)
+        - **WINDOWS**
+            - Go [here](https://nodejs.org/en/download) and download the LTS installer (.msi) for Windows.
+            - Run the installer and keep the default options checked, especially:
+                - "Add to PATH"
+                - "Install npm"
+        - **MAC**
+            - You can follow the Windows instructions, or if you have [Homebrew](https://brew.sh) installed you can use this command: `brew install node`
+        - **LINUX**
+            - Run these commands:
+                - `sudo apt update`
+                - `sudo apt install nodejs npm`
+    - Open a new terminal and verify the installation with:
+        - `node -v`
+        - `npm -v`
+
     - Navigate to the root of this repo and run this command: `npm i` to install the dependencies.
         - NOTE: This is only necessary if you haven't installed them, or if changes were made to the dependencies.
-    - Then run: `npm run test:headed` to run the tests.
+    - Run: `npx playwright install`
+    - Finally, run: `npm run test:headed` to run the tests.
     - Other options include: 
         - `npm run test` if you dont want Chrome to open while the tests are running.
         - `npm run test:debug` if you want to run the tests in debug mode, thus letting you step through every line of code that runs.
