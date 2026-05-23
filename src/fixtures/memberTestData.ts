@@ -8,7 +8,7 @@ export type MemberTestScenarios = {
 export type MemberTestData = {
     firstName: string
     lastName: string,
-    email: string,
+    email: typeof generateEmail,
     phoneNumber: string,
     password: string,
     birthDate: string,
@@ -43,7 +43,7 @@ export const memberTestScenarios: MemberTestScenarios = {
     eighteenYearOld: {
         firstName: placeholderText(),
         lastName: placeholderText(),
-        email: generateEmail(),
+        email: generateEmail,
         phoneNumber: generatePhoneNumber(),
         password: "Testtest0",
         birthDate: generatePastDate({ yearsAgo: 18 }),
@@ -52,7 +52,7 @@ export const memberTestScenarios: MemberTestScenarios = {
     eighteenYearOldPlusOneDay: {
         firstName: placeholderText(),
         lastName: placeholderText(),
-        email: generateEmail(),
+        email: generateEmail,
       phoneNumber: generatePhoneNumber(),
         password: "Testtest0",
         birthDate: generatePastDate({ yearsAgo: 18, daysAgo: 1 }),
@@ -61,7 +61,7 @@ export const memberTestScenarios: MemberTestScenarios = {
     eighteenYearOldMinusOneDay: {
         firstName: placeholderText(),
         lastName: placeholderText(),
-        email: generateEmail(),
+        email: generateEmail,
       phoneNumber: generatePhoneNumber(),
         password: "Testtest0",
         birthDate: generatePastDate({ yearsAgo: 18, daysAgo: -1 }),
@@ -72,7 +72,7 @@ export const memberTestScenarios: MemberTestScenarios = {
     thirtyFiveYearOld: {
         firstName: placeholderText(),
         lastName: placeholderText(),
-        email: generateEmail(),
+        email: generateEmail,
       phoneNumber: generatePhoneNumber(),
         password: "Testtest0",
         birthDate: generatePastDate({ yearsAgo: 35 }),
@@ -81,7 +81,7 @@ export const memberTestScenarios: MemberTestScenarios = {
     thirtyFiveYearOldPlusOneDay: {
         firstName: placeholderText(),
         lastName: placeholderText(),
-        email: generateEmail(),
+        email: generateEmail,
       phoneNumber: generatePhoneNumber(),
         password: "Testtest0",
         birthDate: generatePastDate({ yearsAgo: 35, daysAgo: 1 }),
@@ -90,7 +90,7 @@ export const memberTestScenarios: MemberTestScenarios = {
     thirtyFiveYearOldMinusOneDay: {
         firstName: placeholderText(),
         lastName: placeholderText(),
-        email: generateEmail(),
+        email: generateEmail,
         phoneNumber: generatePhoneNumber(),
         password: "Testtest0",
         birthDate: generatePastDate({ yearsAgo: 35, daysAgo: -1 }),

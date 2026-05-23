@@ -83,7 +83,7 @@ export class JoinPage {
 
         await this.legalFirstNameField.fill(firstName)
         await this.legalLastNameField.fill(lastName)
-        await this.emailField.fill(email)
+        await this.emailField.fill(email())
         await this.phoneNumberField.fill(phoneNumber)
         await this.passwordField.fill(password)
         await this.termsOfUseCheckbox.click()

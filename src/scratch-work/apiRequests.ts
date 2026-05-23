@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { URLS } from '../constants/urls'
+import { URLS } from './urls'
 
 export async function getToken(email: string, password: string) {
     const payload = new URLSearchParams({

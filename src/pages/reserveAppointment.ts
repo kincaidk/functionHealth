@@ -49,6 +49,11 @@ export class ReserveAppointmentPage {
     readonly affirmPhoneNumberField: Locator
     readonly affirmContinueButton: Locator
     readonly affirmVerificationCodeInput: Locator
+    readonly affirmFirstNameField: Locator
+    readonly affirmLastNameField: Locator
+    readonly affirmDobField: Locator
+    readonly affirmEmailField: Locator
+    readonly affirmSubmitButton: Locator
     readonly affirmPaymentPlanOptions: Locator
     readonly affirmChooseThisPlanButton: Locator
     readonly affirmFullNameField: Locator
@@ -99,6 +104,11 @@ export class ReserveAppointmentPage {
         this.affirmPhoneNumberField = page.getByTestId('phone-number-field')
         this.affirmContinueButton = page.getByTestId('submit-button')
         this.affirmVerificationCodeInput = page.getByTestId('phone-pin-field')
+        this.affirmFirstNameField = page.getByTestId('first-name-field')
+        this.affirmLastNameField = page.getByTestId('last-name-field')
+        this.affirmDobField = page.getByTestId('dob-field')
+        this.affirmEmailField = page.getByTestId('email-field')
+        this.affirmSubmitButton = page.getByTestId('submit-button')
         this.affirmPaymentPlanOptions = page.getByRole('radiogroup').getByTestId('term-card') // should match multiple elements
         this.affirmChooseThisPlanButton = page.getByTestId('continue-with-selected-term-button')
         this.affirmFullNameField = page.getByTestId('full-name-field')
@@ -144,6 +154,11 @@ export class ReserveAppointmentPage {
                 await this.affirmPhoneNumberField.fill(phoneNumber)
                 await this.affirmContinueButton.click()
                 await this.affirmVerificationCodeInput.fill("123456")
+                await this.affirmFirstNameField.fill("test")
+                await this.affirmLastNameField.fill("test")
+                await this.affirmDobField.fill("01/01/1990")
+                await this.affirmEmailField.fill("test@gmail.com")
+                await this.affirmSubmitButton.click()
                 const randomPaymentPlanIndex: number = Math.floor(Math.random() * (await this.affirmPaymentPlanOptions.count()))
                 await this.affirmPaymentPlanOptions.nth(randomPaymentPlanIndex).click()
                 await this.affirmChooseThisPlanButton.click()

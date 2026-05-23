@@ -70,7 +70,7 @@ export class CompleteBookingWorkflow {
     }
 
     async completeReserveAppointmentPage(reserveAppointmentPage: ReserveAppointmentPage): Promise<ScanConfirmPage> {
-        const scanConfirmPage = await reserveAppointmentPage.checkout({ checkoutType: this.checkoutType, email: this.member.email, phoneNumber: this.member.phoneNumber })
+        const scanConfirmPage = await reserveAppointmentPage.checkout({ checkoutType: this.checkoutType, email: this.member.email(), phoneNumber: this.member.phoneNumber })
         return scanConfirmPage
     }
 }
