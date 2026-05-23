@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { createNewMember, getToken } from '../functions/apiRequests';
+import { createNewMember, getToken } from './apiRequests';
 import { TOKEN_TYPE } from '../constants/tokenType';
-import { URLS } from '../constants/urls';
+import { URLS } from './urls';
 
 async function main() {
     const { validate: isUUID } = await import('uuid');
@@ -54,4 +54,4 @@ async function main() {
     }
 }
 
-main() // uh oh, I got all the member's data
+main()

@@ -5,7 +5,10 @@
   "main": "apiTest.js",
   "type": "commonjs",
   "scripts": {
-    "go": "tsx apiTest.ts"
+    "go": "tsx apiTest.ts",
+    "test": "npx playwright test booking.spec.ts",
+    "test:headed": "npx playwright test booking.spec.ts --headed",
+    "test:debug": "npx playwright test booking.spec.ts --debug"
   },
   "keywords": [],
   "author": "",
