@@ -2,23 +2,12 @@ import { Page, Locator } from '@playwright/test'
 import { ScheduleScanPage } from './scheduleScanPage'
 import { YesNoMode, YesNoQuestions } from '../components/yesNoQuestions'
 import { WereSorryModal } from '../components/wereSorryModal'
-
-export enum Sex {
-    Male,
-    Female,
-}
-
-export enum Scan {
-    MriScan,
-    MriScanWithSpine,
-    MriScanWithSkeletalAndNeurologicalAssessment,
-    HeartCtScan,
-    LungsCtScan,
-}
+import { Scan, Sex } from '../enums/medical.enums'
 
 export class SelectPlanPage {
     readonly page: Page
     readonly selectYourScanHeading: Locator
+    readonly url: string = 'https://myezra-staging.ezra.com/sign-up/select-plan'
     
     // Member details
     readonly dateOfBirthField: Locator
@@ -46,6 +35,8 @@ export class SelectPlanPage {
     // Page navigation
     readonly continueButton: Locator
     readonly cancelButton: Locator
+
+    
 
     constructor(page: Page) {
         this.page = page
@@ -79,7 +70,7 @@ export class SelectPlanPage {
     }
 
     async goTo(): Promise<void> {
-        await this.page.goto('https://myezra-staging.ezra.com/sign-up/select-plan')
+        await this.page.goto(this.url)
         await this.waitForPageToLoad()
     }
 
@@ -103,7 +94,7 @@ export class SelectPlanPage {
                 sexLocator = this.femaleSexOption
                 break
             default:
-                throw(`Unrecognized sex: ${sex}`) // Shouldn't be possible but doing it anyway.
+                throw(`Unrecognized sex: ${sex}`)
         }
 
         await sexLocator.click()
@@ -128,7 +119,7 @@ export class SelectPlanPage {
                 scanLocator = this.primaryLungsCtScanCard
                 break
             default:
-                throw(`Unrecognized scan: ${scan}`) // Shouldn't be possible but doing it anyway.
+                throw(`Unrecognized scan: ${scan}`)
         }
 
         await scanLocator.click()
@@ -137,11 +128,11 @@ export class SelectPlanPage {
     async chooseAddOns(params: { includeHeartScanAddOn: boolean, includeLungsScanAddOn: boolean }): Promise<void> {
         const { includeHeartScanAddOn = false, includeLungsScanAddOn = false } = params
 
-        if (includeHeartScanAddOn && await this.addOnHeartCtScanCard.isVisible()) {
+        if (includeHeartScanAddOn) {
             await this.addOnHeartCtScanCard.click()
         }
 
-        if (includeLungsScanAddOn && await this.addOnLungsCtScanCard.isVisible()) {
+        if (includeLungsScanAddOn) {
             await this.addOnLungsCtScanCard.click()
         }
     }
@@ -149,7 +140,7 @@ export class SelectPlanPage {
     async continue(yesNoMode: YesNoMode): Promise<ScheduleScanPage> {
         await this.continueButton.click()
 
-        // These seem to only show up if a heart scan was selected.
+        // NOTE: These only show up if a heart scan was selected.
         const yesNoQuestionsArePresent: boolean = await this.yesNoQuestions.noChestSymptomsButton.isVisible()
         if (yesNoQuestionsArePresent) {
             await this.yesNoQuestions.answerYesNoQuestions(yesNoMode)

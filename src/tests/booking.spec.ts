@@ -1,82 +1,57 @@
-import { test, expect, Locator } from '@playwright/test';
-import { LoginPage } from '../pages/loginPage';
-import { JoinPage } from '../pages/joinPage';
-import { Scan, SelectPlanPage, Sex } from '../pages/selectPlan';
-import { chooseRandomEnumValue } from '../functions/helpers';
+import { test, expect } from '@playwright/test';
+import { SelectPlanPage } from '../pages/selectPlan';
 import { ScheduleScanPage } from '../pages/scheduleScanPage';
+import { MemberTestData, memberTestScenarios } from '../fixtures/memberTestData';
+import { CheckoutType } from '../enums/checkout.enums';
+import { BookingTestData, bookingTestData } from '../fixtures/bookingTestData';
+import { CompleteBookingWorkflow } from '../workflows/completeBookingWorkflow';
+import { UnderageWorkflow } from '../workflows/underageWorkflow';
 import { YesNoMode } from '../components/yesNoQuestions';
-import { CookieConsentPrompt } from '../components/cookieConsentPrompt';
-import { CheckoutType } from '../constants/checkoutType';
 
-test('e2e booking test', async ({ page }) => {
-  // Being new account creation process 
-  const loginPage: LoginPage = new LoginPage(page)
-  await loginPage.goTo()
-  const joinPage: JoinPage = await loginPage.goToJoinPage()
+test('booking test - dont allow minors', async ({ page }) => {
+  const member: MemberTestData = memberTestScenarios.eighteenYearOldMinusOneDay as MemberTestData
+  const booking: BookingTestData = bookingTestData.mriScanNoAddOns as BookingTestData
+  const checkoutType: CheckoutType = CheckoutType.Bank
+  const underageWorkflow: UnderageWorkflow = new UnderageWorkflow({ page, member, booking, checkoutType })
 
-  // Close the cookie consent prompt
-  const cookieConsentPrompt: CookieConsentPrompt = new CookieConsentPrompt(page)
-  await cookieConsentPrompt.acceptCookies()
-
-  // Finish new account creation process
-  const firstName: string = "Playwright FirstName"
-  const lastName: string = "Playwright LastName"
-  const email: string = `playwright+${Date.now()}@gmail.com`
-  const phoneNumber: string = "3016546546"
-  const password: string = "Testtest0"
-
-  const selectPlanPage: SelectPlanPage = await joinPage.signUp({firstName, lastName, email, phoneNumber, password})
-
-  //// Confirm we landed on the `Select Your Scan` page
+  const selectPlanPage: SelectPlanPage = await underageWorkflow.createAccount()
   await expect(selectPlanPage.selectYourScanHeading).toBeVisible()
 
-  
-  // Select birth date and sex
-  const birthDate: string = "01-01-1990"
-  const sexAtBirth: Sex = chooseRandomEnumValue({ enumToChooseFrom: Sex })
-  await selectPlanPage.enterBirthDate(birthDate)
-  await selectPlanPage.chooseSexAtBirth(sexAtBirth)
+  await underageWorkflow.fillOutSelectPlanPage(selectPlanPage)
+  await expect(selectPlanPage.continueButton).toBeDisabled()
+})
 
-  // Select primary scan
-  const selectedScan: Scan = chooseRandomEnumValue({ enumToChooseFrom: Scan })
-  await selectPlanPage.choosePrimaryScan(selectedScan)
+test('booking test - allow 18 year olds', async ({ page }) => {
+  const member: MemberTestData = memberTestScenarios.eighteenYearOld as MemberTestData
+  const booking: BookingTestData = bookingTestData.mriScanNoAddOns as BookingTestData
+  const checkoutType: CheckoutType = CheckoutType.Bank
+  const underageWorkflow: UnderageWorkflow = new UnderageWorkflow({ page, member, booking, checkoutType })
 
-  // Select add-on(s)
-  await selectPlanPage.chooseAddOns({includeHeartScanAddOn: true, includeLungsScanAddOn: true})
+  const selectPlanPage: SelectPlanPage = await underageWorkflow.createAccount()
+  await expect(selectPlanPage.selectYourScanHeading).toBeVisible()
 
-  // Continue
-  const yesNoMode: YesNoMode = YesNoMode.AllNo //chooseRandomEnumValue({ enumToChooseFrom: YesNoMode })
-  const scheduleScanPage: ScheduleScanPage = await selectPlanPage.continue(yesNoMode)
+  await underageWorkflow.fillOutSelectPlanPage(selectPlanPage)
+  await expect(selectPlanPage.continueButton).toBeEnabled()
 
-  //// Confirm we landed on the `Schedule your scan` page
+  const scheduleScanPage: ScheduleScanPage = await selectPlanPage.continue(YesNoMode.AllNo)
   await expect(scheduleScanPage.scheduleYourScanHeading).toBeVisible()
+}) 
 
+test('e2e booking test - account creation -> payment', async ({ page }) => {
+  const member: MemberTestData = memberTestScenarios.thirtyFiveYearOld as MemberTestData
+  const booking: BookingTestData = bookingTestData.mriScanWithSkeletalAndNeurologicalAssessmentWithAllAddOns as BookingTestData
+  const checkoutType: CheckoutType = CheckoutType.Bank
+  const bookingWorkflow: CompleteBookingWorkflow = new CompleteBookingWorkflow({ page, member, booking, checkoutType })
 
-  // Select the state
-  await scheduleScanPage.chooseState()
+  const selectPlanPage: SelectPlanPage = await bookingWorkflow.createAccount()
+  await expect(selectPlanPage.selectYourScanHeading).toBeVisible() // Confirm we landed on the `Select Your Scan` page
 
-  // Select the center
-  await scheduleScanPage.chooseCenter()
+  const scheduleScanPage: ScheduleScanPage = await bookingWorkflow.completeSelectPlanPage(selectPlanPage)
+  await expect(scheduleScanPage.scheduleYourScanHeading).toBeVisible() // Confirm we landed on the `Schedule your scan` page
 
-  // Select the dates and times for appointment 1
-  await scheduleScanPage.selectAppointmentDatesAndTimes({ appointmentNumber: 1 })
+  const reserveAppointmentPage = await bookingWorkflow.completeScheduleScanPage(scheduleScanPage)
+  await expect(reserveAppointmentPage.reserveYourAppointmentHeading).toBeVisible() // Confirm we landed on the 'Reserve Appointment' page
 
-  // Select the dates and times for appointment 2, if necessary
-  const appointment2Calendar: Locator = scheduleScanPage.findCalendarForAppointment(2)
-  if (await appointment2Calendar.isVisible()) {
-    await scheduleScanPage.selectAppointmentDatesAndTimes({ appointmentNumber: 2 })
-  }
-
-  // Continue
-  const reserveAppointmentPage = await scheduleScanPage.continue()
-
-  //// Confirm we landed on the 'Reserve Appointment' page
-  await expect(reserveAppointmentPage.reserveYourAppointmentHeading).toBeVisible()
-
-  // Checkout
-  const randomCheckoutType = chooseRandomEnumValue({ enumToChooseFrom: CheckoutType, valuesToAvoid: [ CheckoutType.GooglePay ] })
-  const scanConfirmPage = await reserveAppointmentPage.checkout({ checkoutType: randomCheckoutType, email, phoneNumber })
-
-  // Confirm we finsihed paying by checking if we landed on the Scan Confirm page.
-  await expect(scanConfirmPage.beingMedicalQuestionnaireButton).toBeVisible()
+  const scanConfirmPage = await bookingWorkflow.completeReserveAppointmentPage(reserveAppointmentPage)
+  await expect(scanConfirmPage.beingMedicalQuestionnaireButton).toBeVisible() // Confirm we finsihed paying by checking if we landed on the Scan Confirm page.
 });

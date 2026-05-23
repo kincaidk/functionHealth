@@ -15,3 +15,22 @@ export function getMMYYForNextYear(date: Date = new Date()): string {
   const year = String((date.getFullYear() + 1) % 100).padStart(2, "0");
   return `${month}${year}`;
 }
+
+export function randomTrueFalse(): boolean {
+    return !!Math.floor(Math.random() * 2) // 0 is falsey. Non-zero numbers are not.
+}
+
+export function generatePastDate(params: { yearsAgo?: number, daysAgo?: number, monthsAgo?: number }) {
+    const { yearsAgo = 0, daysAgo = 0, monthsAgo = 0 } = params
+
+    const date = new Date()
+    date.setFullYear(date.getFullYear() - yearsAgo)
+    date.setDate(date.getDate() - daysAgo)
+    date.setMonth(date.getMonth() - monthsAgo)
+
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const year = date.getFullYear()
+
+    return `${month}-${day}-${year}`
+}

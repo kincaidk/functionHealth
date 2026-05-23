@@ -10,7 +10,14 @@ export class ScanConfirmPage {
         this.beingMedicalQuestionnaireButton = page.getByRole('button', { name: 'Begin Medical Questionnaire' })
     }
 
-    
+    async goTo(): Promise<void> {
+        await this.page.goto(this.url)
+        await this.waitForPageToLoad()
+    }
+
+    async waitForPageToLoad(): Promise<void> {
+        await this.beingMedicalQuestionnaireButton.waitFor({ state: 'visible' })
+    }
 }
 
 

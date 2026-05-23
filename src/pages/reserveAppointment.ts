@@ -2,11 +2,13 @@ import { Page, Locator, FrameLocator } from '@playwright/test'
 import { getMMYYForNextYear } from '../functions/helpers'
 import { ScanConfirmPage } from './scanConfirmPage'
 import { stripeCardNumber, stripeRoutingNumber, stripeAccountNumbers } from '../constants/stripe'
-import { CheckoutType } from '../constants/checkoutType'
+import { CheckoutType } from '../enums/checkout.enums'
+
 
 export class ReserveAppointmentPage {
     readonly page: Page
     readonly reserveYourAppointmentHeading: Locator
+    readonly url: string = 'https://myezra-staging.ezra.com/sign-up/reserve-appointment'
 
     readonly cardNumber: string = stripeCardNumber
     readonly expirationDate: string = getMMYYForNextYear()
@@ -63,7 +65,6 @@ export class ReserveAppointmentPage {
         this.page = page
         this.reserveYourAppointmentHeading = page.getByRole('heading', { name: 'Reserve your appointment' })
 
-        
         // iFrames
         this.cardPaymentFrame = page.locator('iframe[title="Secure payment input frame"]').first().contentFrame()
         this.bankPaymentFrame = page.locator('iframe[title="Bank search results"]').first().contentFrame()
@@ -110,6 +111,15 @@ export class ReserveAppointmentPage {
         this.backButton = page.locator('[data-test="cancel"]')
         this.continueButton = page.locator('[data-test="submit"]')
 
+    }
+
+    async goTo(): Promise<void> {
+        await this.page.goto(this.url)
+        await this.waitForPageToLoad()
+    }
+
+    async waitForPageToLoad(): Promise<void> {
+        await this.reserveYourAppointmentHeading.waitFor({ state: 'visible' })
     }
 
     async back(): Promise<void> {
@@ -163,7 +173,7 @@ export class ReserveAppointmentPage {
     }
 
     async cardCheckout(): Promise<ScanConfirmPage> {
-        await this.page.waitForTimeout(2_000); // wait because Stripe is async
+        await this.page.waitForTimeout(2_000); // wait because Stripe is async, and thus the iframes take a brief moment to load in.
         await this.cardTab.evaluate((tab) => {
             tab.scrollIntoView({
                 block: 'center',
@@ -183,7 +193,7 @@ export class ReserveAppointmentPage {
     async bankCheckout(params: { email: string, phoneNumber: string }): Promise<ScanConfirmPage> {
         const { email, phoneNumber } = params
 
-        await this.page.waitForTimeout(2_000); // wait because Stripe is async
+        await this.page.waitForTimeout(2_000); // wait because Stripe is async, and thus the iframes take a brief moment to load in.
         await this.bankTab.evaluate((tab) => {
             tab.scrollIntoView({
                 block: 'center',
@@ -205,7 +215,7 @@ export class ReserveAppointmentPage {
 
     // NOTE: For whatever reason, Google Pay doesn't appear as an option when Playwright is driving...
     async googlePayCheckout(): Promise<ScanConfirmPage> {
-        await this.page.waitForTimeout(2_000); // wait because Stripe is async
+        await this.page.waitForTimeout(2_000); // wait because Stripe is async, and thus the iframes take a brief moment to load in.
         await this.googlePayTab.evaluate((tab) => {
             tab.scrollIntoView({
                 block: 'center',
@@ -218,7 +228,7 @@ export class ReserveAppointmentPage {
     }
 
     async affirmCheckout(phoneNumber: string): Promise<ScanConfirmPage> {
-        await this.page.waitForTimeout(2_000); // wait because Stripe is async
+        await this.page.waitForTimeout(2_000); // wait because Stripe is async, and thus the iframes take a brief moment to load in.
         await this.affirmTab.evaluate((tab) => {
             tab.scrollIntoView({
                 block: 'center',
@@ -253,25 +263,4 @@ export class ReserveAppointmentPage {
 
         return scanConfirmPage
     }
-
-    // async _test() {
-    //     await this.page.waitForTimeout(2_000); // wait becasue Stripe is async
-    //     const inputs = this.paymentOptionsFrame.locator('input')
-    //     const count = await this.paymentOptionsFrame.locator('input').count()
-    //     console.log(count); // 11
-
-    //     for (let i = 0; i < count; i++) {
-    //         console.log("NAME ---")
-    //         console.log(await inputs.nth(i).getAttribute("name"))
-    //         console.log("TITLE ---")
-    //         console.log(await inputs.nth(i).getAttribute("title"))
-    //         console.log("ID ---")
-    //         console.log(await inputs.nth(i).getAttribute("id"))
-    //         console.log("DATA-TESTID ---")
-    //         console.log(await inputs.nth(i).getAttribute("data-testId"))
-    //         console.log("CLASS ---")
-    //         console.log(await inputs.nth(i).getAttribute("class"))
-    //     }
-    // }
-
 }

@@ -4,6 +4,7 @@ import { ReserveAppointmentPage } from './reserveAppointment'
 export class ScheduleScanPage {
     readonly page: Page
     readonly scheduleYourScanHeading: Locator
+    readonly url: string = 'https://myezra-staging.ezra.com/sign-up/schedule-scan'
 
     readonly stateCombobox: Locator
     readonly stateOption: Locator
@@ -43,7 +44,7 @@ export class ScheduleScanPage {
     }
 
     async goTo(): Promise<void> {
-        await this.page.goto('https://myezra-staging.ezra.com/sign-up/schedule-scan')
+        await this.page.goto(this.url)
         await this.waitForPageToLoad()
     }
 

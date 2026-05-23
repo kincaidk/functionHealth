@@ -4,6 +4,7 @@ import { JoinPage } from './joinPage'
 export class LoginPage {
     readonly page: Page
     readonly pleaseSignInToYourAccount: Locator
+    readonly url: string = 'https://myezra-staging.ezra.com/sign-in'
 
     readonly emailField: Locator
     readonly passwordField: Locator
@@ -21,7 +22,7 @@ export class LoginPage {
     }
 
     async goTo(): Promise<void> {
-        await this.page.goto('https://myezra-staging.ezra.com/sign-in')
+        await this.page.goto(this.url)
         await this.waitForPageToLoad()
     }
 
